@@ -1,0 +1,136 @@
+#!/usr/bin/env node
+const { readFileSync, writeFileSync, existsSync } = require('fs');
+const modulesPath = require('child_process').execSync('npm root -g').toString().trim()
+
+const ec = require(modulesPath + '/elliptic').ec;
+const yargs = require(modulesPath + '/yargs');
+const random = require(modulesPath + '/random-bigint')
+const ALG = 'secp256k1'
+
+const keyPath = './key';
+const pubPath = './key.pub';
+
+function createKeys() {
+  console.log('creating keys...');
+  try {
+    if (!existsSync(keyPath)) {
+      const g = new ec(ALG);
+      const randomBigInt = random(256);
+      const keypair = g.keyFromPrivate(randomBigInt)
+      writeFileSync(keyPath, keypair.getPrivate('hex'));
+      writeFileSync(pubPath, keypair.getPublic('hex'));
+    }
+    console.log('done')
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function getAddress() {
+  console.log('generating address...');
+  try {
+    if (existsSync(keyPath)) {
+      const g = new ec(ALG);
+      const public = g.keyFromPrivate(readFileSync(keyPath)).getPublic('hex');
+      console.log(`address: ${public}`)
+    }
+    console.log('done');
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function signMessage({message: rawMessage}) {
+  console.log('signing message...');
+  try {
+    if (existsSync(keyPath)) {
+      const g = new ec(ALG);
+      const keyPair = g.keyFromPrivate(readFileSync(keyPath));
+      
+      console.log(`message: ${rawMessage}`);
+      const message = Buffer.from(rawMessage, 'utf8').toString('hex');
+      const signature = Buffer.from(keyPair.sign(message).toDER()).toString('base64');
+      console.log(`signature: ${signature}`);
+    }
+
+    console.log('done');
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+async function verifyMessage({signature, address, message}) {
+  console.log('verifying message...');
+  try {
+    const g = new ec(ALG);
+    const keyPair = g.keyFromPublic(address, 'hex');
+    
+    console.log(`message: ${message}`);
+    const hexMessage = Buffer.from(message, 'utf8').toString('hex');
+    const valid = keyPair.verify(hexMessage, Buffer.from(signature, 'base64'));
+    
+    console.log(`verification: ${valid}`);
+
+    console.log('done');
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+
+yargs.command(
+  'createKeys',
+  'Creates random keys',
+  () => { },
+  createKeys
+)
+
+yargs.command(
+  'getAddress',
+  'get get address',
+  () => { },
+  getAddress
+)
+
+yargs.command(
+  'sign', 
+  'Sign message with my private key',
+  (yargs) => {
+    yargs.positional('message', {
+      describe: 'Message to sign',
+      alias: 'm',
+      default: '',
+      type: 'string'
+    })
+  },
+  signMessage)
+
+  yargs.command(
+    'verify', 
+    'Verify message with address',
+    (yargs) => {
+      yargs.positional('message', {
+        describe: 'Message to sign',
+        alias: 'm',
+        default: '',
+        type: 'string'
+      });
+
+      yargs.positional('address', {
+        describe: 'Address',
+        alias: 'a',
+        default: '',
+        type: 'string'
+      })
+
+      yargs.positional('signature', {
+        describe: 'Base64 signature',
+        alias: 's',
+        default: '',
+        type: 'string'
+      })
+    },
+    verifyMessage)
+
+
+yargs.parse()
