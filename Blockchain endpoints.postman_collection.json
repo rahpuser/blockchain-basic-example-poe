@@ -1,0 +1,173 @@
+{
+	"info": {
+		"_postman_id": "cd1870b5-5ba4-47ff-a7ff-db5ad3dc9731",
+		"name": "Blockchain endpoints",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get block by height",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{url}}:{{port}}/blocks/:height",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"blocks",
+						":height"
+					],
+					"variable": [
+						{
+							"key": "height",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Validate block",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}:{{port}}/blocks/:height/validate",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"blocks",
+						":height",
+						"validate"
+					],
+					"variable": [
+						{
+							"key": "height",
+							"value": "0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Validate blockchain",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{url}}:{{port}}/validate",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"validate"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Request submission ownership",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": []
+						},
+						{
+							"key": "address",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/request-submission",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"request-submission"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Submit document",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "message",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "signature",
+							"value": "",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/documents",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"documents"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Proof of existance(ownership)",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "file",
+							"type": "file",
+							"src": []
+						}
+					]
+				},
+				"url": {
+					"raw": "{{url}}:{{port}}/documents/verify",
+					"host": [
+						"{{url}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"documents",
+						"verify"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
